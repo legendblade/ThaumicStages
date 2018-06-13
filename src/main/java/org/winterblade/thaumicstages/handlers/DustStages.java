@@ -1,15 +1,20 @@
 package org.winterblade.thaumicstages.handlers;
 
+import com.blamejared.mtlib.helpers.InputHelper;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.annotations.ModOnly;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.oredict.IOreDictEntry;
+import net.minecraft.block.Block;
 import org.winterblade.thaumicstages.actions.AddOreDustStageAction;
 import org.winterblade.thaumicstages.actions.AddSimpleDustStageAction;
+import org.winterblade.thaumicstages.actions.AddDustTransformAction;
 import stanhebben.zenscript.annotations.Optional;
 import stanhebben.zenscript.annotations.ZenClass;
 import stanhebben.zenscript.annotations.ZenMethod;
+import thaumcraft.common.lib.crafting.DustTriggerOre;
+import thaumcraft.common.lib.crafting.DustTriggerSimple;
 
 @ModOnly("thaumcraft")
 @ZenRegister
@@ -37,5 +42,45 @@ public class DustStages {
         CraftTweakerAPI.apply(new AddOreDustStageAction(stage, ore, error));
     }
 
-    
+    /**
+     * Creates a dust transform for the given block into another item or block
+     * @param research The research to require to perform the action
+     * @param block    The block to transform
+     * @param result   The output of the transform; if result has a block, it will be placed in world
+     */
+    @ZenMethod
+    public static void addTransform(String research, IItemStack block, IItemStack result) {
+        CraftTweakerAPI.apply(
+            new AddDustTransformAction(
+                new DustTriggerSimple(
+                    research,
+                    Block.getBlockFromItem(InputHelper.toStack(block).getItem()),
+                    InputHelper.toStack(result)
+                ),
+                block,
+                result
+            )
+        );
+    }
+
+    /**
+     * Creates a dust transform for the given ore dictionary into another item or block
+     * @param research The research to require to perform the action
+     * @param ore      The ore dictionary to transform
+     * @param result   The output of the transform; if result has a block, it will be placed in world
+     */
+    @ZenMethod
+    public static void addTransform(String research, IOreDictEntry ore, IItemStack result) {
+        CraftTweakerAPI.apply(
+            new AddDustTransformAction(
+                new DustTriggerOre(
+                        research,
+                        ore.getName(),
+                        InputHelper.toStack(result)
+                ),
+                ore,
+                result
+            )
+        );
+    }
 }
