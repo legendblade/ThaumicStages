@@ -1,10 +1,13 @@
 package org.winterblade.thaumicstages.compat;
 
+import net.darkhax.gamestages.data.IStageData;
 import net.darkhax.gamestages.event.GameStageEvent;
+import net.darkhax.gamestages.event.StagesSyncedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import thaumcraft.api.capabilities.IPlayerKnowledge;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchCategories;
@@ -28,11 +31,15 @@ public class StagedResearchManager {
         StagedHiddenResearches.get(stage).add(research);
     }
 
+    /**
+     * Toggle research visibility if we're on the client / in singleplayer
+     * @param stage  The stage
+     * @param toggle True if the stage should be unhidden, false otherwise
+     */
     private static void toggleResearches(String stage, boolean toggle) {
         if(!StagedHiddenResearches.containsKey(stage) || FMLCommonHandler.instance().getSide() != Side.CLIENT) {
             return;
         }
-
         for (String research : StagedHiddenResearches.get(stage)) {
             ResearchEntry entry = ResearchCategories.getResearch(research);
 
@@ -64,5 +71,14 @@ public class StagedResearchManager {
         IPlayerKnowledge know = ThaumcraftCapabilities.getKnowledge(evt.getEntityPlayer());
         know.removeResearch("!stage"+evt.getStageName());
         toggleResearches(evt.getStageName(), false);
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void stagesSynced(StagesSyncedEvent evt) {
+        IStageData data = evt.getData();
+        for(String stage : StagedHiddenResearches.keySet()) {
+            toggleResearches(stage, data.hasStage(stage));
+        }
     }
 }
