@@ -1,8 +1,8 @@
 package org.winterblade.thaumicstages.actions;
 
-import com.google.common.collect.Lists;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
+import org.winterblade.thaumicstages.compat.StagedResearchManager;
 import thaumcraft.api.research.ResearchCategories;
 import thaumcraft.api.research.ResearchEntry;
 
@@ -12,10 +12,12 @@ import java.util.Arrays;
 public class AddResearchStageAction implements IAction {
     private final String stage;
     private final String research;
+    private final boolean autoUnlock;
 
-    public AddResearchStageAction(String stage, String research) {
+    public AddResearchStageAction(String stage, String research, boolean autoUnlock) {
         this.stage = stage;
         this.research = research;
+        this.autoUnlock = autoUnlock;
     }
 
 
@@ -31,8 +33,22 @@ public class AddResearchStageAction implements IAction {
         // Update the research's parent with a fake stage entry
         ArrayList<String> list = new ArrayList<>(Arrays.asList(entry.getParents()));
         list.add("!stage"+stage);
-
         entry.setParents(list.toArray(new String[0]));
+
+        // Add in the metas:
+        ArrayList<ResearchEntry.EnumResearchMeta> meta = new ArrayList<>(Arrays.asList(entry.getMeta()));
+
+        if(!entry.hasMeta(ResearchEntry.EnumResearchMeta.HIDDEN)) {
+            meta.add(ResearchEntry.EnumResearchMeta.HIDDEN);
+
+            StagedResearchManager.registerStagedHidden(research, stage);
+        }
+
+        if (autoUnlock && !entry.hasMeta(ResearchEntry.EnumResearchMeta.AUTOUNLOCK)) {
+            meta.add(ResearchEntry.EnumResearchMeta.AUTOUNLOCK);
+        }
+
+        entry.setMeta(meta.toArray(new ResearchEntry.EnumResearchMeta[0]));
     }
 
     @Override
