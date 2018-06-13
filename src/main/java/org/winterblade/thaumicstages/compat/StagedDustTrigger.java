@@ -21,7 +21,8 @@ public class StagedDustTrigger implements IDustTrigger {
 
     @Override
     public Placement getValidFace(World world, EntityPlayer entityPlayer, BlockPos blockPos, EnumFacing enumFacing) {
-        if (GameStageHelper.hasStage(entityPlayer, stage)) return base.getValidFace(world, entityPlayer, blockPos, enumFacing);
+        Placement result = base.getValidFace(world, entityPlayer, blockPos, enumFacing);
+        if (result == null || GameStageHelper.hasStage(entityPlayer, stage)) return result;
 
         // If we have an error, send it to the player:
         if(error != null && world.isRemote) {
