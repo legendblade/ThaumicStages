@@ -1,0 +1,16 @@
+[
+{
+  "modid": "thaumicstages",
+  "name": "Thaumic Stages",
+  "description": "Mod to add Game Stages support to Thaumcraft.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["TarynWinterblade"],
+  "credits": "Darkhax for Game Stages, Azanor for Thaumcraft, jaredlll08 for everything CraftTweaker",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
