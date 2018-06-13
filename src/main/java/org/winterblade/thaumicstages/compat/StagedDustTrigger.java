@@ -25,7 +25,7 @@ public class StagedDustTrigger implements IDustTrigger {
         if (result == null || GameStageHelper.hasStage(entityPlayer, stage)) return result;
 
         // If we have an error, send it to the player:
-        if(error != null && world.isRemote) {
+        if(error != null && !world.isRemote) {
             entityPlayer.sendStatusMessage(new TextComponentString(error), false);
         }
 
